@@ -3,3 +3,7 @@ start-project:
 
 stop-project:
 	docker compose -p mlops down
+
+test: start-project
+	sleep 15
+	bash tests/run_tests.sh
