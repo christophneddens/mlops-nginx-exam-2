@@ -9,13 +9,13 @@ services:
     expose:
       - "8000"
 
-  # API v2 (debug version) - used for A/B testing          # NEW
-  api-v2:                                                   # NEW
-    build:                                                  # NEW
-      context: .                                            # NEW
-      dockerfile: src/api/v2/Dockerfile                     # NEW
-    expose:                                                 # NEW
-      - "8000"                                              # NEW
+  # API v2 (debug version) - used for A/B testing
+  api-v2:
+    build:
+      context: .
+      dockerfile: src/api/v2/Dockerfile
+    expose:
+      - "8000"
 
   # Nginx: the single entry point
   nginx:
@@ -30,7 +30,18 @@ services:
       - ./deployments/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - api-v1
-      - api-v2                                              # NEW
+      - api-v2
+
+  # Nginx exporter: reads /nginx_status and gives the numbers to Prometheus
+  nginx_exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx_exporter
+    command:
+      - --nginx.scrape-uri=http://nginx:80/nginx_status
+    ports:
+      - "9113:9113"
+    depends_on:
+      - nginx
 
   prometheus:
     image: prom/prometheus:latest
