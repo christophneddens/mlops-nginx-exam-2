@@ -9,6 +9,14 @@ services:
     expose:
       - "8000"
 
+  # API v2 (debug version) - used for A/B testing          # NEW
+  api-v2:                                                   # NEW
+    build:                                                  # NEW
+      context: .                                            # NEW
+      dockerfile: src/api/v2/Dockerfile                     # NEW
+    expose:                                                 # NEW
+      - "8000"                                              # NEW
+
   # Nginx: the single entry point
   nginx:
     build:
@@ -22,6 +30,7 @@ services:
       - ./deployments/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - api-v1
+      - api-v2                                              # NEW
 
   prometheus:
     image: prom/prometheus:latest
